@@ -50,7 +50,7 @@ public class Text2SpeechMain
 		// progress为合成进度0~100
 		public void onBufferProgress(int progress)
 		{
-			System.out.println(progress);
+//			System.out.println(progress);
 		}
 		
 		// 会话合成完成回调接口

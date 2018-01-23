@@ -40,12 +40,8 @@ import java.util.Scanner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.iflytek.cloud.speech.SpeechConstant;
-import com.iflytek.cloud.speech.SpeechUtility;
-
 public class Getwords extends Thread
 {
-	private static long TIME = 1 * 24 * 60 * 60 * 1000;
 	private static Socket connection = null;
 	private static ServerSocket server = null;
 	private static String rootPath;
@@ -136,8 +132,9 @@ public class Getwords extends Thread
 								if(judge(string , 1))
 								{
 									if( ! new File(rootPath + string + ".mp3")
-									.exists())
-										writeRespose(request , "文件已过期" , out , 2);
+											.exists())
+										writeRespose(request , "文件已过期" , out ,
+												2);
 									else
 										writeRespose(request , string , out , 0);
 								}
@@ -145,7 +142,8 @@ public class Getwords extends Thread
 								{
 									System.out.println("请求中包含非法字符");
 									PrintLog.printLog("请求中包含非法字符");
-									writeRespose(request , "请求中包含非法字符" , out , 1);
+									writeRespose(request , "请求中包含非法字符" , out ,
+											1);
 								}
 							}
 							else
@@ -163,9 +161,9 @@ public class Getwords extends Thread
 					}
 					else
 					{
-//						System.out.println("请求异常");
-//						PrintLog.printLog("请求异常");
-//						writeRespose(request , "请求异常" , out , 1);
+						System.out.println("请求异常");
+						PrintLog.printLog("请求异常");
+						writeRespose(request , "请求异常" , out , 3);
 					}
 				}
 				catch(IOException e)
@@ -256,11 +254,23 @@ public class Getwords extends Thread
 				this.content = localWrite.toByteArray();
 				MIMEType = "text/html";
 			}
+			else if(3 == flag)
+			{
+				localWrite.write("null".getBytes(this.encoding));
+				this.content = localWrite.toByteArray();
+				MIMEType = "text/html";
+			}
 			// 如果检测到是HTTP/1.0及以后的协议，按照规范，需要发送一个MIME首部
 			String requestContent = request.toString();
 			String header = "HTTP/1.1 200 OK\r\n" + "Server: OneFile 1.0\r\n"
 					+ "Content-length: " + ( this.content.length ) + "\r\n"
 					+ "Content-type: " + MIMEType + "\r\n\r\n";
+			if(3 == flag)
+			{
+				header = "HTTP/1.1 404 \r\n" + "Server: OneFile 1.0\r\n"
+						+ "Content-length: " + ( this.content.length ) + "\r\n"
+						+ "Content-type: " + MIMEType + "\r\n\r\n";
+			}
 			this.header = header.getBytes(this.encoding);
 			if(requestContent.indexOf("HTTP/") != - 1)
 			{
@@ -361,13 +371,12 @@ public class Getwords extends Thread
 		
 		rootPath = Util.getPath();
 		File ttspath = new File(rootPath);
-		if(!ttspath.exists())
+		if( ! ttspath.exists())
 		{
 			ttspath.getParentFile().mkdirs();
 		}
 		System.out.println(rootPath);
 		PrintLog.printLog(rootPath);
-		SpeechUtility.createUtility(SpeechConstant.APPID + "=59ce0194");
 		try
 		{
 			String contentType = "audio/mp3";
@@ -375,7 +384,7 @@ public class Getwords extends Thread
 			int port = Integer.parseInt(Util.getSendPort());
 			Thread thread = new Getwords(contentType , encoding , port);
 			thread.start();
-			new RemoveMp3Files(TIME).start();
+			new RemoveMp3Files(Integer.parseInt(Util.getDELTime())).start();
 			Scanner cinScanner = new Scanner(System.in);
 			String cancel = cinScanner.next();
 			if("q" == cancel || "q".equalsIgnoreCase(cancel))

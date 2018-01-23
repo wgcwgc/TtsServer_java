@@ -45,8 +45,6 @@ import com.iflytek.cloud.speech.SpeechUtility;
 
 public class SetWords extends Thread
 {
-	private static long TIME = 1 * 24 * 60 * 60 * 1000;
-//	private static long TIME = 1 * 60 * 1000;
 	private static Socket connection = null;
 	private static ServerSocket server = null;
 	private static String ttsPath;
@@ -245,9 +243,9 @@ public class SetWords extends Thread
 					}
 					else
 					{
-//						System.out.println("请求异常");
-//						PrintLog.printLog("请求异常");
-//						writeRespose(request , "请求异常" , out , 1);
+						System.out.println("请求异常");
+						PrintLog.printLog("请求异常");
+						writeRespose(request , "请求异常" , out , 3);
 					}
 				}
 				catch(IOException e)
@@ -372,11 +370,23 @@ public class SetWords extends Thread
 				this.content = localWrite.toByteArray();
 				MIMEType = "text/html";
 			}
+			else if(3 == flag)
+			{
+				localWrite.write("null".getBytes(this.encoding));
+				this.content = localWrite.toByteArray();
+				MIMEType = "text/html";
+			}
 			// 如果检测到是HTTP/1.0及以后的协议，按照规范，需要发送一个MIME首部
 			String requestContent = request.toString();
 			String header = "HTTP/1.1 200 OK\r\n" + "Server: OneFile 1.0\r\n"
 					+ "Content-length: " + ( this.content.length ) + "\r\n"
 					+ "Content-type: " + MIMEType + "\r\n\r\n";
+			if(3 == flag)
+			{
+				header = "HTTP/1.1 404\r\n" + "Server: OneFile 1.0\r\n"
+						+ "Content-length: " + ( this.content.length ) + "\r\n"
+						+ "Content-type: " + MIMEType + "\r\n\r\n";
+			}
 			this.header = header.getBytes(this.encoding);
 			if(requestContent.indexOf("HTTP/") != - 1)
 			{
@@ -502,7 +512,8 @@ public class SetWords extends Thread
 		}
 		System.out.println(ttsPath);
 		PrintLog.printLog(ttsPath);
-		SpeechUtility.createUtility(SpeechConstant.APPID + "=59ce0194");
+		SpeechUtility.createUtility(SpeechConstant.APPID + "="
+				+ Util.getKDXFid());
 		try
 		{
 			String contentType = "text/html";
@@ -510,7 +521,8 @@ public class SetWords extends Thread
 			int port = Integer.parseInt(Util.getAcceptPort());
 			Thread thread = new SetWords(contentType , encoding , port);
 			thread.start();
-			new RemoveMp3Files(TIME).start();
+			
+			new RemoveMp3Files(Integer.parseInt(Util.getDELTime())).start();
 			Scanner cinScanner = new Scanner(System.in);
 			String cancel = cinScanner.next();
 			if("q" == cancel || "q".equalsIgnoreCase(cancel))

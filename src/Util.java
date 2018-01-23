@@ -71,6 +71,18 @@ public class Util
 		return readIniFile.getValue("ip" , "sendIP");
 	}
 	
+	public static String getKDXFid()
+	{
+		readIniFile = new ReadIniFile("config");
+		return readIniFile.getValue("id" , "kdxfID");
+	}
+	
+	public static String getDELTime()
+	{
+		readIniFile = new ReadIniFile("config");
+		return readIniFile.getValue("time" , "delTime");
+	}
+	
 	public static String getEncryptFileName()
 	{
 		String content = "";
