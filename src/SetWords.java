@@ -243,8 +243,8 @@ public class SetWords extends Thread
 					}
 					else
 					{
-						System.out.println("请求异常");
-						PrintLog.printLog("请求异常");
+						System.out.println("请求异常" + str);
+						PrintLog.printLog("请求异常" + str);
 						writeRespose(request , "请求异常" , out , 3);
 					}
 				}
