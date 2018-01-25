@@ -36,10 +36,10 @@ public class Text2SpeechMain
 	public static void creat(String contents , String path)
 	{
 		SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer();
-		mTts.setParameter(SpeechConstant.VOICE_NAME , "xiaoyan");// 设置发音人
-		mTts.setParameter(SpeechConstant.SPEED , "50");// 设置语速
-		mTts.setParameter(SpeechConstant.PITCH , "50");// 设置语调，范围0~100
-		mTts.setParameter(SpeechConstant.VOLUME , "80");// 设置音量，范围0~100
+		mTts.setParameter(SpeechConstant.VOICE_NAME , Util.getVoiceName());// 设置发音人
+		mTts.setParameter(SpeechConstant.SPEED , Util.getSpeed());// 设置语速
+		mTts.setParameter(SpeechConstant.PITCH , Util.getPitch());// 设置语调，范围0~100
+		mTts.setParameter(SpeechConstant.VOLUME , Util.getVolume());// 设置音量，范围0~100
 		mTts.synthesizeToUri(contents , path , synthesizeToUriListener);
 //		System.out.println(contents + " " + path );
 	}

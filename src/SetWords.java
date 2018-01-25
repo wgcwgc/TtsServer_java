@@ -487,6 +487,7 @@ public class SetWords extends Thread
 	/**
 	 * @param args 
 	 * @throws IOException 
+	 * http://localhost:8088/setWords?words=%E7%99%BE%E5%BA%A6&sign=A6FBE3AF49BB2488E536302ED5B9228E
 	 */
 	@SuppressWarnings("deprecation")
 	public static void main(String [] args) throws IOException

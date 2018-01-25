@@ -26,7 +26,10 @@ public class Util
 	public static ReadIniFile readIniFile;
 	public static String SECRETKEY = "8848@jzb";
 	public static String rootPath = null;
-	
+	/**
+	 * 获取项目tts路径
+	 * @return
+	 */
 	public static String getPath()
 	{
 		try
@@ -39,7 +42,10 @@ public class Util
 		}
 		return rootPath + "tts\\";
 	}
-	
+	/**
+	 * 获取项目根路径
+	 * @return
+	 */
 	public static String getRootPath()
 	{
 		try
@@ -52,37 +58,91 @@ public class Util
 		}
 		return rootPath;
 	}
-	
+	/**
+	 * 获取服务器接收端口
+	 * @return
+	 */
 	public static String getAcceptPort()
 	{
 		readIniFile = new ReadIniFile("config");
 		return readIniFile.getValue("port" , "acceptPort");
 	}
-	
+	/**
+	 * 获取服务器发送端口
+	 * @return
+	 */
 	public static String getSendPort()
 	{
 		readIniFile = new ReadIniFile("config");
 		return readIniFile.getValue("port" , "sendPort");
 	}
-	
+	/**
+	 * 获取服务器发送IP
+	 * @return
+	 */
 	public static String getServerIP()
 	{
 		readIniFile = new ReadIniFile("config");
 		return readIniFile.getValue("ip" , "sendIP");
 	}
-	
+	/**
+	 * 获取科大讯飞项目id
+	 * @return
+	 */
 	public static String getKDXFid()
 	{
 		readIniFile = new ReadIniFile("config");
 		return readIniFile.getValue("id" , "kdxfID");
 	}
-	
+	/**
+	 * 获取音频过期时间
+	 * @return
+	 */
 	public static String getDELTime()
 	{
 		readIniFile = new ReadIniFile("config");
 		return readIniFile.getValue("time" , "delTime");
 	}
-	
+	/**
+	 * 获取发音人
+	 * @return
+	 */
+	public static String getVoiceName()
+	{
+		readIniFile = new ReadIniFile("config");
+		return readIniFile.getValue("voicename" , "voicename");
+	}
+	/**
+	 * 获取语速
+	 * @return
+	 */
+	public static String getSpeed()
+	{
+		readIniFile = new ReadIniFile("config");
+		return readIniFile.getValue("speed" , "speed");
+	}
+	/**
+	 * 获取语调
+	 * @return
+	 */
+	public static String getPitch()
+	{
+		readIniFile = new ReadIniFile("config");
+		return readIniFile.getValue("pitch" , "pitch");
+	}
+	/**
+	 * 获取音量
+	 * @return
+	 */
+	public static String getVolume()
+	{
+		readIniFile = new ReadIniFile("config");
+		return readIniFile.getValue("volume" , "volume");
+	}
+	/**
+	 * 获取四位随机码
+	 * @return
+	 */
 	public static String getEncryptFileName()
 	{
 		String content = "";
@@ -98,8 +158,8 @@ public class Util
 		}
 		return content;
 	}
-	
 	/**
+	 * 测试
 	 * @param args
 	 */
 	public static void main(String [] args)

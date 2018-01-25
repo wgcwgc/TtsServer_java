@@ -1,6 +1,8 @@
-
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Properties;
 
 public class ReadIniFile
 {
@@ -22,7 +24,7 @@ public class ReadIniFile
 				{
 					new File(filename);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
 					String str = "\n ReadIniFile类：配置文件不存在或者格式不正确0！！！\n";
 					System.out.println(str);
@@ -31,14 +33,14 @@ public class ReadIniFile
 				}
 				reader = new BufferedReader(new FileReader(filename));
 			}
-			else if (filename.equals("config"))
+			else if(filename.equals("config"))
 			{
 				filename = "./config.ini";
 				try
 				{
 					new File(filename);
 				}
-				catch (Exception e)
+				catch(Exception e)
 				{
 					String str = "\n ReadIniFile类：配置文件不存在或者格式不正确0！！！\n";
 					System.out.println(str);
@@ -72,19 +74,25 @@ public class ReadIniFile
 				while( ( line = reader.readLine() ) != null)
 				{
 					line = line.trim();
+//					System.out.println("0:" + line);
 					if(line.matches("\\[.*\\]"))
 					{
+//						System.out.println("1:" + line);
 						currentSecion = line.replaceFirst("\\[(.*)\\]" , "$1");
+//						System.out.println("2:" + currentSecion);
 						current = new Properties();
 						sections.put(currentSecion , current);
 					}
 					else if(line.matches(".*=.*"))
 					{
+//						System.out.println("3:" + line);
 						if(current != null)
 						{
+//							System.out.println("4:" + current);
 							int i = line.indexOf('=');
 							String name = line.substring(0 , i);
 							String value = line.substring(i + 1);
+//							System.out.println("5:" + name + ":" + value);
 							current.setProperty(name , value);
 						}
 					}
@@ -134,5 +142,10 @@ public class ReadIniFile
 		String value = p.getProperty(name);
 		return value;
 	}
+	
+	public static void main(String [] args)
+	{
+		ReadIniFile readIniFile = new ReadIniFile("config");
+		System.out.println(readIniFile.getValue("voicename" , "voicename"));
+	}
 }
-
