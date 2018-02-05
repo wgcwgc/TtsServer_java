@@ -26,22 +26,49 @@ public class Util
 	public static ReadIniFile readIniFile;
 	public static String SECRETKEY = "8848@jzb";
 	public static String rootPath = null;
+	public static String ttsRootPath = null;
+	public static String ttsPath = null;
+	
 	/**
 	 * 获取项目tts路径
 	 * @return
 	 */
-	public static String getPath()
+	public static String getTtsPath()
 	{
-		try
+		readIniFile = new ReadIniFile("config");
+		ttsRootPath = readIniFile.getValue("path" , "ttsRootPath");
+//		System.out.println("ttsRootPath:" + ttsRootPath + "*");
+		if(ttsRootPath.trim().equals(""))
 		{
-			rootPath = new File(".").getCanonicalPath().toString() + "\\";
+			ttsRootPath = getRootPath() + "tts" + File.separatorChar;
+			if(creatPath(ttsRootPath))
+			{
+				return ttsRootPath;
+			}
+			return null;
 		}
-		catch(IOException e)
+		
+		ttsPath = readIniFile.getValue("path" , "ttsPath");
+//		System.out.println("ttsPath:" + ttsPath + "*");
+		if(ttsPath.trim().equals(""))
 		{
-			rootPath = System.getProperty("user.dir") + "\\";
+			if(creatPath(ttsRootPath))
+			{
+				return ttsRootPath;
+			}
+			return null;
 		}
-		return rootPath + "tts\\";
+		else
+		{
+//			System.out.println(ttsRootPath + ttsPath);
+			if(creatPath(ttsRootPath + ttsPath))
+			{
+				return ttsRootPath + ttsPath;
+			}
+			return null;
+		}
 	}
+	
 	/**
 	 * 获取项目根路径
 	 * @return
@@ -50,14 +77,31 @@ public class Util
 	{
 		try
 		{
-			rootPath = new File(".").getCanonicalPath().toString() + "\\";
+			rootPath = new File(".").getCanonicalPath().toString() + File.separatorChar;
 		}
 		catch(IOException e)
 		{
-			rootPath = System.getProperty("user.dir") + "\\";
+			rootPath = System.getProperty("user.dir") + File.separatorChar;
 		}
-		return rootPath;
+		
+		if(creatPath(rootPath))
+		{
+			return rootPath;
+		}
+		return null;
 	}
+	
+	private static Boolean creatPath(String path)
+	{
+		File file = new File(path);
+//		System.out.println(path);
+		if(!file.exists())
+		{
+			file.getParentFile().mkdirs();
+		}
+		return true;
+	}
+	
 	/**
 	 * 获取服务器接收端口
 	 * @return
@@ -164,7 +208,8 @@ public class Util
 	 */
 	public static void main(String [] args)
 	{
-		System.out.println(getEncryptFileName());
+//		System.out.println("ttsPath00:" + getTtsPath());
+//		System.out.println("rootPath00:" + getRootPath());
 	}
 	
 }

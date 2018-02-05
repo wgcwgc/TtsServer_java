@@ -42,7 +42,7 @@ public class RemoveMp3Files extends Thread
 	@Override
 	public void run()
 	{
-		String path = Util.getPath();
+		String path = Util.getTtsPath();
 		File file = new File(path);
 		if(!file.exists())
 		{

@@ -31,7 +31,9 @@ public class PrintLog
 	{
 		try
 		{
+//			System.out.println("0");
 			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(Util.getRootPath() + "debug.log" , true));
+//			System.out.println("1");
 			contents = ( new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS")).format(Calendar.getInstance().getTime()) + "\r\n" + contents + "\r\n";
 //			System.out.println(contents);
 			bufferedWriter.write(contents);

@@ -89,8 +89,8 @@ public class SetWords extends Thread
 		try
 		{
 			server = new ServerSocket(this.port);
-			System.out.println("Accepting connections on port "
-					+ server.getLocalPort());
+//			System.out.println("Accepting connections on port "
+//					+ server.getLocalPort());
 			PrintLog.printLog("Accepting connections on port "
 					+ server.getLocalPort());
 			while(true)
@@ -119,7 +119,8 @@ public class SetWords extends Thread
 					}
 					
 					String str = contentBytes.toString();
-					System.out.println(str);
+//					System.out.println(str);
+					PrintLog.printLog(str);
 					if(judge(str , 0))
 					{
 						// get
@@ -135,8 +136,8 @@ public class SetWords extends Thread
 								String [] list = str.split("&");
 								if(list.length != 2)
 								{
-									System.out.println("请求参数有误");
-									PrintLog.printLog("请求参数有误");
+									System.out.println("请求参数有误00");
+									PrintLog.printLog("请求参数有误00");
 									writeRespose(request , "请求参数有误" , out , 1);
 									continue;
 								}
@@ -144,52 +145,65 @@ public class SetWords extends Thread
 								String sign = list[1].substring(list[1]
 										.indexOf("=") + 1);
 //								System.out.println(sign);
-								System.out.print(string);
+//								System.out.print(string);
 								PrintLog.printLog(string);
 								if( ! judge(string , sign))
 								{
-									System.out.println("请求参数有误");
-									PrintLog.printLog("请求参数有误");
+									System.out.println("请求参数有误01");
+									PrintLog.printLog("请求参数有误01");
 									writeRespose(request , "请求参数有误" , out , 1);
 									continue;
 								}
 								string = URLDecoder.decode(string , "utf-8");
-								System.out.println(string);
+//								System.out.println(string);
 								PrintLog.printLog(string);
 								if(judge(string , 1))
 								{
+//									System.out.println(string);
+									PrintLog.printLog(string);
 									String encryptFileName = getEncryptFileName();
-									
+//									System.out.println(encryptFileName);
+									PrintLog.printLog(encryptFileName);
 									if( ! new File(ttsPath + encryptFileName
 											+ ".mp3").exists())
 									{
 										Text2SpeechMain.creat(string , ttsPath
-												+ string + ".pcm");
-//								System.out.println("asdf" + rootPath);
-										while(true)
+												+ encryptFileName + ".pcm");
+//								System.out.println("asdf" + encryptFileName);
+										Boolean pcmExists = false;
+										while(Text2SpeechMain.working)
 										{
-											if(new File(ttsPath + string
+											if(new File(ttsPath + encryptFileName
 													+ ".pcm").exists())
 											{
+												pcmExists = true;
 												break;
 											}
+										}
+										if( ! pcmExists)
+										{
+											continue;
 										}
 										try
 										{
 											Pcm2Wav.convertAudioFiles(ttsPath
-													+ string + ".pcm" , ttsPath
-													+ string + ".wav");
+													+ encryptFileName + ".pcm" ,
+													ttsPath + encryptFileName
+															+ ".wav");
 											while(true)
 											{
-												if(new File(ttsPath + string
+												if(new File(ttsPath
+														+ encryptFileName
 														+ ".wav").exists())
 												{
 													break;
 												}
 											}
-											wav2mp3.execute(new File(ttsPath
-													+ string + ".wav") ,
-													ttsPath + encryptFileName
+											wav2mp3.execute(
+													new File(ttsPath
+															+ encryptFileName
+															+ ".wav") , ttsPath
+															+ encryptFileName
 															+ ".mp3");
 											while(true)
 											{
@@ -200,10 +214,10 @@ public class SetWords extends Thread
 													break;
 												}
 											}
-											new File(ttsPath + string + ".pcm")
-													.delete();
-											new File(ttsPath + string + ".wav")
-													.delete();
+											new File(ttsPath + encryptFileName
+													+ ".pcm").delete();
+											new File(ttsPath + encryptFileName
+													+ ".wav").delete();
 										}
 										catch(Exception e)
 										{
@@ -267,6 +281,7 @@ public class SetWords extends Thread
 		}
 		catch(IOException e)
 		{
+			System.out.println(e.toString());
 			System.err.println("Could not start server. Port Occupied");
 			PrintLog.printLog("Could not start server. Port Occupied");
 		}
@@ -337,14 +352,11 @@ public class SetWords extends Thread
 //				MIMEType = "audio/mp3";
 				jsonObject = new JSONObject();
 				jsonObject.put("result" , 0);
-				jsonObject.put(
-						"url" ,
-						"http://"
-								+ InetAddress.getLocalHost().getHostAddress()
-										.toString() + ":"
+				jsonObject.put("mesg" , "OK");
+				jsonObject.put("url" ,
+						"http://" + Util.getServerIP().toString() + ":"
 								+ Integer.parseInt(Util.getSendPort())
 								+ "/tts/" + string + ".mp3");
-				jsonObject.put("mesg" , "OK");
 				string = jsonObject.toString();
 				localWrite.write(string.getBytes(this.encoding));
 				this.content = localWrite.toByteArray();
@@ -505,13 +517,13 @@ public class SetWords extends Thread
 			System.out.println(e1.toString());
 		}
 		
-		ttsPath = Util.getPath();
+		ttsPath = Util.getTtsPath();
 		File ttspathFile = new File(ttsPath);
 		if( ! ttspathFile.exists())
 		{
 			ttspathFile.getParentFile().mkdirs();
 		}
-		System.out.println(ttsPath);
+//		System.out.println(ttsPath);
 		PrintLog.printLog(ttsPath);
 		SpeechUtility.createUtility(SpeechConstant.APPID + "="
 				+ Util.getKDXFid());
@@ -520,6 +532,7 @@ public class SetWords extends Thread
 			String contentType = "text/html";
 			String encoding = "utf-8";
 			int port = Integer.parseInt(Util.getAcceptPort());
+//			System.out.println(port);
 			Thread thread = new SetWords(contentType , encoding , port);
 			thread.start();
 			

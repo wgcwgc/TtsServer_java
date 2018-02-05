@@ -25,6 +25,9 @@ import com.iflytek.cloud.speech.SynthesizeToUriListener;
 
 public class Text2SpeechMain
 {
+	
+	public static boolean working;
+	
 	public Text2SpeechMain()
 	{
 		
@@ -35,6 +38,8 @@ public class Text2SpeechMain
 	 */
 	public static void creat(String contents , String path)
 	{
+		working = true;
+//		System.out.println("contents:" + contents + "\npath:" + path);
 		SpeechSynthesizer mTts = SpeechSynthesizer.createSynthesizer();
 		mTts.setParameter(SpeechConstant.VOICE_NAME , Util.getVoiceName());// 设置发音人
 		mTts.setParameter(SpeechConstant.SPEED , Util.getSpeed());// 设置语速
@@ -57,6 +62,15 @@ public class Text2SpeechMain
 		// uri为合成保存地址，error为错误信息，为null时表示合成会话成功
 		public void onSynthesizeCompleted(String uri , SpeechError error)
 		{
+			working = false;
+			if(error != null)
+			{
+				System.out.println(error);
+			}
+			else
+			{
+				System.out.println("Success! saved as : " + uri.substring(0 , uri.lastIndexOf(".pcm")) + ".mp3");
+			}
 //			System.out.println(error);
 //			System.out.println(uri);
 		}
