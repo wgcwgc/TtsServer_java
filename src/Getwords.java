@@ -37,10 +37,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class Getwords extends Thread
+public class GetWords extends Thread
 {
 	private static Socket connection = null;
 	private static ServerSocket server = null;
@@ -51,13 +48,13 @@ public class Getwords extends Thread
 	private String MIMEType;
 	private int port;
 	
-	private Getwords(String data , String encoding , String MIMEType , int port)
+	private GetWords(String data , String encoding , String MIMEType , int port)
 			throws UnsupportedEncodingException
 	{
 		this(data.getBytes(encoding) , encoding , MIMEType , port);
 	}
 	
-	private Getwords(byte [] data , String encoding , String MIMEType , int port)
+	private GetWords(byte [] data , String encoding , String MIMEType , int port)
 			throws UnsupportedEncodingException
 	{
 		this.encoding = encoding;
@@ -72,7 +69,7 @@ public class Getwords extends Thread
 	 * @param encoding utf-8
 	 * @param port 8088
 	 */
-	private Getwords(String MIMEType , String encoding , int port)
+	private GetWords(String MIMEType , String encoding , int port)
 			throws UnsupportedEncodingException
 	{
 		this.MIMEType = MIMEType;
@@ -86,8 +83,8 @@ public class Getwords extends Thread
 		try
 		{
 			server = new ServerSocket(this.port);
-			System.out.println("Accepting connections on port "
-					+ server.getLocalPort());
+//			System.out.println("Accepting connections on port "
+//					+ server.getLocalPort());
 			PrintLog.printLog("Accepting connections on port "
 					+ server.getLocalPort());
 			while(true)
@@ -116,7 +113,8 @@ public class Getwords extends Thread
 					}
 					
 					String str = contentBytes.toString();
-					System.out.println(str);
+//					System.out.println(str);
+					PrintLog.printLog(str);
 					if(judge(str , 0))
 					{
 						// get
@@ -127,14 +125,14 @@ public class Getwords extends Thread
 								str = str.substring(str.indexOf("/tts/") + 5 ,
 										str.indexOf("."));
 								String string = str;
-								System.out.println(string);
+//								System.out.println(string);
 								PrintLog.printLog(string);
 								if(judge(string , 1))
 								{
 									if( ! new File(rootPath + string + ".mp3")
 											.exists())
 										writeRespose(request , "文件已过期" , out ,
-												2);
+												1);
 									else
 										writeRespose(request , string , out , 0);
 								}
@@ -148,8 +146,8 @@ public class Getwords extends Thread
 							}
 							else
 							{
-								System.out.println("请求异常");
-								PrintLog.printLog("请求异常");
+								System.out.println("请求异常00");
+								PrintLog.printLog("请求异常00");
 								writeRespose(request , "请求异常" , out , 1);
 							}
 						}
@@ -161,9 +159,9 @@ public class Getwords extends Thread
 					}
 					else
 					{
-						System.out.println("请求异常");
-						PrintLog.printLog("请求异常");
-						writeRespose(request , "请求异常" , out , 3);
+						System.out.println("请求异常01");
+						PrintLog.printLog("请求异常01");
+						writeRespose(request , "请求异常" , out , 1);
 					}
 				}
 				catch(IOException e)
@@ -219,11 +217,12 @@ public class Getwords extends Thread
 	private void writeRespose(StringBuffer request , String string ,
 			OutputStream out , int flag)
 	{
-		JSONObject jsonObject = null;
 		InputStream localRead = null;
 		try
 		{
 			ByteArrayOutputStream localWrite = new ByteArrayOutputStream();
+			String requestContent = request.toString();
+			String header;
 			if(0 == flag)
 			{
 				localRead = new FileInputStream(rootPath + string + ".mp3");
@@ -234,41 +233,14 @@ public class Getwords extends Thread
 				}
 				this.content = localWrite.toByteArray();
 				MIMEType = "audio/mp3";
-			}
-			else if(1 == flag)
-			{
-				jsonObject = new JSONObject();
-				jsonObject.put("result" , - 1);
-				jsonObject.put("mesg" , string);
-				string = jsonObject.toString();
-				localWrite.write(string.getBytes(this.encoding));
-				this.content = localWrite.toByteArray();
-				MIMEType = "text/html";
-			}
-			else if(2 == flag)
-			{
-				jsonObject = new JSONObject();
-				jsonObject.put("result" , 404);
-				jsonObject.put("mesg" , string);
-				localWrite.write(jsonObject.toString().getBytes(this.encoding));
-				this.content = localWrite.toByteArray();
-				MIMEType = "text/html";
-			}
-			else if(3 == flag)
-			{
-				localWrite.write("null".getBytes(this.encoding));
-				this.content = localWrite.toByteArray();
-				MIMEType = "text/html";
-			}
-			// 如果检测到是HTTP/1.0及以后的协议，按照规范，需要发送一个MIME首部
-			String requestContent = request.toString();
-			String header = "HTTP/1.1 200 OK\r\n" + "Server: OneFile 1.0\r\n"
-					+ "Content-length: " + ( this.content.length ) + "\r\n"
-					+ "Content-type: " + MIMEType + "\r\n\r\n";
-			if(3 == flag)
-			{
-				header = "HTTP/1.1 404 \r\n" + "Server: OneFile 1.0\r\n"
+				header = "HTTP/1.1 200 OK\r\n" + "Server: OneFile 1.0\r\n"
 						+ "Content-length: " + ( this.content.length ) + "\r\n"
+						+ "Content-type: " + MIMEType + "\r\n\r\n";
+			}
+			else
+			{
+				MIMEType = "text/html";
+				header = "HTTP/1.1 404 Not Found\r\n" + "Server: OneFile 1.0\r\n"
 						+ "Content-type: " + MIMEType + "\r\n\r\n";
 			}
 			this.header = header.getBytes(this.encoding);
@@ -276,8 +248,10 @@ public class Getwords extends Thread
 			{
 				out.write(this.header);
 			}
-			
-			out.write(this.content);
+			if(0 == flag)
+			{
+				out.write(this.content);
+			}
 			out.flush();
 		}
 		catch(IOException e)
@@ -286,7 +260,7 @@ public class Getwords extends Thread
 			PrintLog.printLog(e.toString());
 			e.printStackTrace();
 		}
-		catch(JSONException e)
+		catch(Exception e)
 		{
 			System.out.println(e);
 			PrintLog.printLog(e.toString());
@@ -369,20 +343,20 @@ public class Getwords extends Thread
 			System.out.println(e1.toString());
 		}
 		
-		rootPath = Util.getPath();
+		rootPath = Util.getTtsPath();
 		File ttspath = new File(rootPath);
 		if( ! ttspath.exists())
 		{
 			ttspath.getParentFile().mkdirs();
 		}
-		System.out.println(rootPath);
+//		System.out.println(rootPath);
 		PrintLog.printLog(rootPath);
 		try
 		{
 			String contentType = "audio/mp3";
 			String encoding = "utf-8";
 			int port = Integer.parseInt(Util.getSendPort());
-			Thread thread = new Getwords(contentType , encoding , port);
+			Thread thread = new GetWords(contentType , encoding , port);
 			thread.start();
 			new RemoveMp3Files(Integer.parseInt(Util.getDELTime())).start();
 			Scanner cinScanner = new Scanner(System.in);
